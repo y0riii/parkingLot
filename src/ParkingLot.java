@@ -15,7 +15,7 @@ public class ParkingLot {
     // This latch ensures that all car threads start simultaneously
     private final CountDownLatch latch = new CountDownLatch(1);
 
-    public void enter(int gateNumber, int carId, int arrivalTime) {
+    public int enter(int gateNumber, int carId, int arrivalTime) {
         try {
             System.out.printf("Car %d from Gate %d arrived at time %d\n", carId, gateNumber, arrivalTime);
             boolean didWait = false;
@@ -28,10 +28,12 @@ public class ParkingLot {
             carsCurrentlyParked.incrementAndGet();
             gateCarsServed[gateNumber - 1].incrementAndGet();
             totalCarsServed.incrementAndGet();
-            if (didWait && lastLeavingTime.get() - arrivalTime > 0) {
+            if (didWait) {
+                int waitedTime = lastLeavingTime.get() - arrivalTime;
                 System.out.printf(
                         "Car %d from Gate %d parked after waiting for %d units of time. (Parking Status: %d spots occupied)\n",
-                        carId, gateNumber, lastLeavingTime.get() - arrivalTime, carsCurrentlyParked.get());
+                        carId, gateNumber, waitedTime, carsCurrentlyParked.get());
+                return waitedTime;
             } else {
                 System.out.printf("Car %d from Gate %d parked. (Parking Status: %d spots occupied)\n",
                         carId, gateNumber, carsCurrentlyParked.get());
@@ -39,6 +41,7 @@ public class ParkingLot {
         } catch (InterruptedException e) {
             System.out.printf("Car %d from Gate %d was interrupted.\n", carId, gateNumber);
         }
+        return 0;
     }
 
     public void exit(int gateNumber, int carId, int arrivalTime, int duration) {

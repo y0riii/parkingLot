@@ -16,16 +16,16 @@ public class Car implements Runnable {
     @Override
     public void run() {
         try {
-            // Waiting for the latch from MyParkingLot so all threads start at the same time
+            // Waiting for the latch from ParkingLot so all threads start at the same time
             parkingLot.getLatch().await();
 
             // Simulate arrival time
             Thread.sleep(arrivalTime * 1000L);
-            parkingLot.enter(gateNumber, carId, arrivalTime);
+            int waitedTime = parkingLot.enter(gateNumber, carId, arrivalTime);
 
             // Simulate parking duration
             Thread.sleep(duration * 1000L);
-            parkingLot.exit(gateNumber, carId, arrivalTime, duration);
+            parkingLot.exit(gateNumber, carId, arrivalTime + waitedTime, duration);
         } catch (InterruptedException e) {
             System.out.printf("Car %d from Gate %d was interrupted.\n", carId, gateNumber);
         }
