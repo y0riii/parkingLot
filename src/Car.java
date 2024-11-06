@@ -20,26 +20,26 @@ public class Car implements Runnable {
             // Simulate arrival time
         	boolean waited = false;
             Thread.sleep(arrivalTime * 1000);
-            System.out.printf("Car %d from Gate %d arrived at time %d\n", carId, gateNumber + 1, arrivalTime);
+            System.out.printf("Car %d from Gate %d arrived at time %d\n", carId, gateNumber, arrivalTime);
 
             double waitStartTime = System.currentTimeMillis();
             if (!ParkingLot.parkingSpots.tryAcquire()) {
             	waited = true;
-                System.out.printf("Car %d from Gate %d waiting for a spot.\n", carId, gateNumber + 1);
+                System.out.printf("Car %d from Gate %d waiting for a spot.\n", carId, gateNumber);
                 // Block until a spot is available
                 ParkingLot.parkingSpots.acquire();
             }
             double waitEndTime = System.currentTimeMillis();
             double waitingTime = Math.round((waitEndTime - waitStartTime) / 1000) + 1;
             ParkingLot.carsCurrentlyParked.incrementAndGet();
-            ParkingLot.gateCarsServed[gateNumber].incrementAndGet();
+            ParkingLot.gateCarsServed[gateNumber - 1].incrementAndGet();
             ParkingLot.totalCarsServed.incrementAndGet();
             if (waited && waitEndTime - waitStartTime > 0) {
                 System.out.printf("Car %d from Gate %d parked after waiting for %d units of time. (Parking Status: %d spots occupied)\n",
-                        carId, gateNumber + 1, (int) waitingTime, ParkingLot.carsCurrentlyParked.get());
+                        carId, gateNumber, (int) waitingTime, ParkingLot.carsCurrentlyParked.get());
             } else {                    	
             	System.out.printf("Car %d from Gate %d parked. (Parking Status: %d spots occupied)\n", 
-            			carId, gateNumber + 1, ParkingLot.carsCurrentlyParked.get());
+            			carId, gateNumber, ParkingLot.carsCurrentlyParked.get());
             }
             
             // Simulate parking duration
@@ -48,14 +48,14 @@ public class Car implements Runnable {
             // Car leaves
             ParkingLot.carsCurrentlyParked.decrementAndGet();
             System.out.printf("Car %d from Gate %d left after %d units of time. (Parking Status: %d spots occupied)\n", 
-            		carId, gateNumber + 1, duration, ParkingLot.carsCurrentlyParked.get());
+            		carId, gateNumber, duration, ParkingLot.carsCurrentlyParked.get());
             ParkingLot.parkingSpots.release();
             
 
             
 
         } catch (InterruptedException e) {
-            System.out.printf("Car %d from Gate %d was interrupted.\n", carId, gateNumber + 1);
+            System.out.printf("Car %d from Gate %d was interrupted.\n", carId, gateNumber);
         }
     }
 }

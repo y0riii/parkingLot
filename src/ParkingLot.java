@@ -28,7 +28,7 @@ public class ParkingLot {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] carData = line.split(", ");
-                int gateNumber = Integer.parseInt(carData[0].split(" ")[1]) - 1;
+                int gateNumber = Integer.parseInt(carData[0].split(" ")[1]);
                 int carId = Integer.parseInt(carData[1].split(" ")[1]);
                 int arrivalTime = Integer.parseInt(carData[2].split(" ")[1]);
                 int duration = Integer.parseInt(carData[3].split(" ")[1]);
